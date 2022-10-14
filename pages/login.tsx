@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 
 import {  
     Typography, 
@@ -11,12 +11,21 @@ import {
     Box, 
     CssBaseline, 
     FormControl,
-    FormControlLabel} from '@mui/material'
+    FormControlLabel,
+    Stack,
+    Snackbar} from '@mui/material'
 import { typography } from '@mui/system';
 import { type } from 'os';
 import Link from 'next/link';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+    props,
+    ref,
+  ) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
 type CopyProps = {
     site?: string;
@@ -36,37 +45,74 @@ function Copyright(props: CopyProps){
     )
 }
 
+{/*<Snackbar open={open} duration={6} message={'Usuário logado com sucesso! ...Aguarde...'}
+ */}
+
 const theme = createTheme();
 
 export default function LoginPage() {
 
-const[password, setPassword] = useState<string | undefined | null | FormDataEntryValue> (' ')
-const [error, setError] = useState<string | boolean>(' ');
-const [errorMessage, setErrorMessage] = useState<string>(' ');
+const[email, setEmail] = useState<string | undefined | null | FormDataEntryValue> ('')
+const[password, setPassword] = useState<string | undefined | null | FormDataEntryValue> ('')
+const [error, setError] = useState<string | boolean>('');
+const [errorMessage, setErrorMessage] = useState<string>('');
+const [open, setOpen] = useState<boolean>(false);
+const [contador,setContador] = useState<number>(0);
+
+
+const handleClose = () =>{
+    setOpen(false);
+}
+
+
+
+useEffect(()=>{
+
+    if(contador == 0){
+        document.title = `Executando useEffect a 1x. O contador ${contador}`;
+    }else{
+        document.title = `Executando useEffect ${contador} vezes`;
+    }
+    console.log(`Executando useEffect ${contador} vezes`)
+},[contador]);
+    
+
 
 const handleSubmit = (event: FormEvent<HTMLFormElement>)=>{
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     setPassword(data.get('email'));
-
-    if(password && password.length < 6){
-        setError(true)
-        setErrorMessage('Senha muito curta')
-    }
-
-
-    console.log({
-        email: data.get('email'),
-        password: data.get('password'),
-    });
     
 }
+
+useEffect(()=>{
+    
+    if(password && password.length < 6){
+        setError(true)
+        setErrorMessage('Senha precisa ter no mínimo 6 caracteres')
+    }else if(password){
+        setError(false)
+        setErrorMessage('') 
+        setOpen(true);
+    }
+
+},[password])
 
   return (
     <ThemeProvider theme={theme}>
         <Container component='main' maxWidth='xs'>
             <CssBaseline />
+    <Stack>
+        <Snackbar open={open} autoHideDuration={5000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          Usuário logado com sucesso! ...Aguarde...
+        </Alert>
+        </Snackbar>
+    </Stack>
+
+            <button onClick={()=>setContador(contador+1)}>Mudando o Contador</button>
+            Contador vale {contador}
             <Box sx={{mt:8, 
                 display:'flex', 
                 flexDirection:'column',
