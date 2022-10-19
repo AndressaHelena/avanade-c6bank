@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from '@emotion/styled';
+import Register from '../components/Form/Cadastro';
 
 
 const Container = styled.body`
  
-  background-image: url('/logo.jpg');
   background-size: cover;
   display: flex;
   height: 100vh;
@@ -14,6 +14,6 @@ const Container = styled.body`
 
 export default function RegisterPage() {
   return (
-    <Container>register</Container>
+    <Register />
   )
 }
